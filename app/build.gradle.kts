@@ -52,7 +52,7 @@ dependencies {
     implementation("androidx.compose.material:material")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.foundation:foundation")
-
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
     // --- Android Core & Lifecycle ---
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")

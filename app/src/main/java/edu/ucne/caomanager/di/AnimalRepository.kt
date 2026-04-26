@@ -8,13 +8,13 @@ import edu.ucne.caomanager.data.repository.AnimalRepositoryImpl
 import edu.ucne.caomanager.domain.model.repository.AnimalRepository
 import javax.inject.Singleton
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class RepositoryModule {
-
-    @Binds
-    @Singleton
-    abstract fun bindAnimalRepository(
-        impl: AnimalRepositoryImpl
-    ): AnimalRepository
-}
+//@Module
+//@InstallIn(SingletonComponent::class)
+//abstract class RepositoryModule {
+//
+//    @Binds
+//    @Singleton
+//    abstract fun bindAnimalRepository(
+//        impl: AnimalRepositoryImpl
+//    ): AnimalRepository
+//}
