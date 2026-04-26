@@ -22,14 +22,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import edu.ucne.caomanager.presentation.animal.AnimalScreen // Asegúrate de que esta ruta sea correcta
+import edu.ucne.caomanager.presentation.animal.AnimalRegistroScreen
+import edu.ucne.caomanager.presentation.animal.AnimalScreen
 import edu.ucne.caomanager.ui.theme.CaomanagerTheme
 
 // Definición de rutas
 sealed class Screen(val route: String) {
     object Inicio : Screen("inicio_screen")
     object Detalle : Screen("detalle_screen")
-    object ListaAnimales : Screen("lista_animales_screen") // Nueva ruta agregada
+    object ListaAnimales : Screen("lista_animales_screen")
+    object RegistroAnimal : Screen("registro_animal_screen")
 }
 
 @AndroidEntryPoint
@@ -53,7 +55,8 @@ class MainActivity : ComponentActivity() {
                             MainScreen(
                                 name = "Usuario",
                                 onIrADetalle = { navController.navigate(Screen.Detalle.route) },
-                                onIrALista = { navController.navigate(Screen.ListaAnimales.route) } // Nuevo botón
+                                onIrALista = { navController.navigate(Screen.ListaAnimales.route) },
+                                onIrARegistro = { navController.navigate(Screen.RegistroAnimal.route) }
                             )
                         }
 
@@ -62,9 +65,16 @@ class MainActivity : ComponentActivity() {
                             SegundaPantalla(onVolver = { navController.popBackStack() })
                         }
 
-                        // Pantalla de Animales (conectada a tu arquitectura)
+                        // Pantalla de Animales
                         composable(Screen.ListaAnimales.route) {
                             AnimalScreen()
+                        }
+
+                        // Pantalla de Registro de Animal
+                        composable(Screen.RegistroAnimal.route) {
+                            AnimalRegistroScreen(
+                                onNavigateBack = { navController.popBackStack() }
+                            )
                         }
                     }
                 }
@@ -78,7 +88,8 @@ fun MainScreen(
     name: String,
     modifier: Modifier = Modifier,
     onIrADetalle: () -> Unit,
-    onIrALista: () -> Unit // Nueva acción
+    onIrALista: () -> Unit,
+    onIrARegistro: () -> Unit
 ) {
     Column(
         modifier = modifier.fillMaxSize(),
@@ -94,9 +105,14 @@ fun MainScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Botón para ir a tu lista de animales
         Button(onClick = onIrALista) {
             Text(text = "Ver lista de animales")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(onClick = onIrARegistro) {
+            Text(text = "Registrar nuevo animal")
         }
     }
 }
@@ -120,6 +136,6 @@ fun SegundaPantalla(onVolver: () -> Unit) {
 @Composable
 fun GreetingPreview() {
     CaomanagerTheme {
-        MainScreen("Android", onIrADetalle = {}, onIrALista = {})
+        MainScreen("Android", onIrADetalle = {}, onIrALista = {}, onIrARegistro = {})
     }
 }
