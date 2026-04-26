@@ -67,7 +67,9 @@ class MainActivity : ComponentActivity() {
 
                         // Pantalla de Animales
                         composable(Screen.ListaAnimales.route) {
-                            AnimalScreen()
+                            AnimalScreen(
+                                onNavigateToRegistro = { navController.navigate(Screen.RegistroAnimal.route) }
+                            )
                         }
 
                         // Pantalla de Registro de Animal

@@ -13,7 +13,7 @@ fun AnimalEntity.toDomain(): Animal {
         pesoInicial = this.pesoInicial,
         precioCompra = this.precioCompra,
         estado = this.estado,
-        pesoActual = TODO(),
+        pesoActual = this.pesoInicial // O el valor que corresponda en tu lógica
     )
 }
 
