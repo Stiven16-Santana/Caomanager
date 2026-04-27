@@ -2,6 +2,8 @@ package edu.ucne.caomanager.presentation.animal
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -13,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import edu.ucne.caomanager.domain.model.Animal
 import edu.ucne.caomanager.presentation.viewmodel.AnimalViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -25,11 +28,47 @@ fun AnimalRegistroScreen(
 ) {
     var showNacimientoPicker by remember { mutableStateOf(false) }
     var showCompraPicker by remember { mutableStateOf(false) }
+    var showSearchDialog by remember { mutableStateOf(false) }
     
     val nacimientoPickerState = rememberDatePickerState()
     val compraPickerState = rememberDatePickerState()
     
     val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val listaAnimales by viewModel.uiState.collectAsState()
+
+    // Diálogo de Búsqueda
+    if (showSearchDialog) {
+        AlertDialog(
+            onDismissRequest = { showSearchDialog = false },
+            title = { Text("Seleccionar Animal") },
+            text = {
+                if (listaAnimales.isEmpty()) {
+                    Text("No hay animales registrados.")
+                } else {
+                    Box(modifier = Modifier.heightIn(max = 400.dp)) {
+                        LazyColumn {
+                            items(listaAnimales) { animal ->
+                                ListItem(
+                                    headlineContent = { Text("Arete: ${animal.codigo}") },
+                                    supportingContent = { Text("Estado: ${animal.estado}") },
+                                    modifier = Modifier.clickable {
+                                        viewModel.seleccionarAnimal(animal)
+                                        showSearchDialog = false
+                                    }
+                                )
+                                HorizontalDivider()
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showSearchDialog = false }) {
+                    Text("Cerrar")
+                }
+            }
+        )
+    }
 
     // DatePicker para Fecha de Nacimiento
     if (showNacimientoPicker) {
@@ -70,10 +109,17 @@ fun AnimalRegistroScreen(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Registro de Animal") },
+                title = { Text(if (viewModel.id == 0) "Registro de Animal" else "Modificar Animal") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
+                    }
+                },
+                actions = {
+                    if (viewModel.id != 0) {
+                        IconButton(onClick = { viewModel.limpiarCampos() }) {
+                            Icon(Icons.Default.Add, contentDescription = "Nuevo")
+                        }
                     }
                 }
             )
@@ -87,13 +133,18 @@ fun AnimalRegistroScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Campo Código
+            // Campo Código con lupa de búsqueda
             OutlinedTextField(
                 value = viewModel.codigo,
                 onValueChange = { viewModel.codigo = it },
                 label = { Text("Código (Arete)") },
                 modifier = Modifier.fillMaxWidth(),
-                leadingIcon = { Icon(Icons.Default.QrCode, contentDescription = null) }
+                leadingIcon = { Icon(Icons.Default.QrCode, contentDescription = null) },
+                trailingIcon = {
+                    IconButton(onClick = { showSearchDialog = true }) {
+                        Icon(Icons.Default.Search, contentDescription = "Buscar animal")
+                    }
+                }
             )
 
             // Campo Fecha de Compra con DatePicker
@@ -161,6 +212,16 @@ fun AnimalRegistroScreen(
                 leadingIcon = { Icon(Icons.Default.Info, contentDescription = null) }
             )
 
+            // Campo Observación
+            OutlinedTextField(
+                value = viewModel.observacion,
+                onValueChange = { viewModel.observacion = it },
+                label = { Text("Observación") },
+                modifier = Modifier.fillMaxWidth(),
+                leadingIcon = { Icon(Icons.Default.Notes, contentDescription = null) },
+                minLines = 3
+            )
+
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
@@ -171,9 +232,9 @@ fun AnimalRegistroScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium
             ) {
-                Icon(Icons.Default.Save, contentDescription = null)
+                Icon(if (viewModel.id == 0) Icons.Default.Save else Icons.Default.Edit, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
-                Text("Guardar Animal")
+                Text(if (viewModel.id == 0) "Guardar Animal" else "Modificar Animal")
             }
         }
     }
