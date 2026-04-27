@@ -1,6 +1,7 @@
 package edu.ucne.caomanager.presentation.viewmodel
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -19,12 +20,14 @@ class AnimalViewModel @Inject constructor(
     private val repository: AnimalRepository
 ) : ViewModel() {
 
+    var id by mutableIntStateOf(0)
     var codigo by mutableStateOf("")
     var fechaNacimiento by mutableStateOf("")
     var fechaCompra by mutableStateOf("")
     var pesoInicial by mutableStateOf("")
     var precioCompra by mutableStateOf("")
     var estado by mutableStateOf("Activo")
+    var observacion by mutableStateOf("")
 
     val uiState: StateFlow<List<Animal>> = repository.getAnimales()
         .stateIn(
@@ -36,24 +39,45 @@ class AnimalViewModel @Inject constructor(
     fun saveAnimal() {
         viewModelScope.launch {
             val animal = Animal(
+                id = id,
                 codigo = codigo,
                 fechaNacimiento = fechaNacimiento,
                 pesoInicial = pesoInicial.toDoubleOrNull() ?: 0.0,
                 precioCompra = precioCompra.toDoubleOrNull() ?: 0.0,
                 estado = estado,
-                pesoActual = pesoInicial.toDoubleOrNull() ?: 0.0
+                pesoActual = pesoInicial.toDoubleOrNull() ?: 0.0,
+                observacion = observacion
             )
             repository.insert(animal)
             limpiarCampos()
         }
     }
 
-    private fun limpiarCampos() {
+    fun seleccionarAnimal(animal: Animal) {
+        id = animal.id
+        codigo = animal.codigo
+        fechaNacimiento = animal.fechaNacimiento ?: ""
+        pesoInicial = animal.pesoInicial.toString()
+        precioCompra = animal.precioCompra.toString()
+        estado = animal.estado
+        observacion = animal.observacion
+    }
+
+    fun buscarAnimal() {
+        viewModelScope.launch {
+            val animal = uiState.value.find { it.codigo.equals(codigo, ignoreCase = true) }
+            animal?.let { seleccionarAnimal(it) }
+        }
+    }
+
+    fun limpiarCampos() {
+        id = 0
         codigo = ""
         fechaNacimiento = ""
         fechaCompra = ""
         pesoInicial = ""
         precioCompra = ""
         estado = "Activo"
+        observacion = ""
     }
 }
