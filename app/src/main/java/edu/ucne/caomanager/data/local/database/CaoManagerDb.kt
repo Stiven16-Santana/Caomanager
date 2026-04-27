@@ -8,7 +8,7 @@ import edu.ucne.caomanager.data.local.entity.dao.AnimalDao
 
 @Database(
     entities = [AnimalEntity::class], // Aquí pones todas tus entidades (tablas)
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class CaoManagerDb : RoomDatabase() {
