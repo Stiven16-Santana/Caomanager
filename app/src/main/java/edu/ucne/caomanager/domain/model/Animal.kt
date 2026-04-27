@@ -7,5 +7,6 @@ data class Animal(
     val pesoInicial: Double,
     val precioCompra: Double,
     val estado: String,
-    val pesoActual: Double
+    val pesoActual: Double,
+    val observacion: String = ""
 )
