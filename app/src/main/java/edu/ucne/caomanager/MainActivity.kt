@@ -29,7 +29,6 @@ import edu.ucne.caomanager.ui.theme.CaomanagerTheme
 // Definición de rutas
 sealed class Screen(val route: String) {
     object Inicio : Screen("inicio_screen")
-    object Detalle : Screen("detalle_screen")
     object ListaAnimales : Screen("lista_animales_screen")
     object RegistroAnimal : Screen("registro_animal_screen")
 }
@@ -50,19 +49,13 @@ class MainActivity : ComponentActivity() {
                         startDestination = Screen.Inicio.route,
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        // Pantalla 1
+                        // Pantalla de Inicio
                         composable(Screen.Inicio.route) {
                             MainScreen(
                                 name = "Usuario",
-                                onIrADetalle = { navController.navigate(Screen.Detalle.route) },
                                 onIrALista = { navController.navigate(Screen.ListaAnimales.route) },
                                 onIrARegistro = { navController.navigate(Screen.RegistroAnimal.route) }
                             )
-                        }
-
-                        // Pantalla 2
-                        composable(Screen.Detalle.route) {
-                            SegundaPantalla(onVolver = { navController.popBackStack() })
                         }
 
                         // Pantalla de Animales
@@ -89,7 +82,6 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(
     name: String,
     modifier: Modifier = Modifier,
-    onIrADetalle: () -> Unit,
     onIrALista: () -> Unit,
     onIrARegistro: () -> Unit
 ) {
@@ -100,12 +92,6 @@ fun MainScreen(
     ) {
         Text(text = "¡Bienvenido a CaoManager, $name!")
         Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = onIrADetalle) {
-            Text(text = "Ir a la Segunda Pantalla")
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         Button(onClick = onIrALista) {
             Text(text = "Ver lista de animales")
@@ -119,25 +105,10 @@ fun MainScreen(
     }
 }
 
-@Composable
-fun SegundaPantalla(onVolver: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "¡Lograste navegar!")
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onVolver) {
-            Text("Regresar")
-        }
-    }
-}
-
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun GreetingPreview() {
     CaomanagerTheme {
-        MainScreen("Android", onIrADetalle = {}, onIrALista = {}, onIrARegistro = {})
+        MainScreen("Android", onIrALista = {}, onIrARegistro = {})
     }
 }
