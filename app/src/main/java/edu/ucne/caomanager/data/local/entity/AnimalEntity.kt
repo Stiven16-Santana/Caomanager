@@ -11,5 +11,6 @@ data class AnimalEntity(
     val fechaNacimiento: String?,
     val pesoInicial: Double,
     val precioCompra: Double,
-    val estado: String
+    val estado: String,
+    val observacion: String = ""
 )
